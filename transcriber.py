@@ -29,6 +29,8 @@ def _is_hallucination(text: str) -> bool:
         return True
     if re.search(r"(.)\1{9,}", text):
         return True
+    if INITIAL_PROMPT.replace("，", "").replace("、", "") in text.replace("，", "").replace("、", ""):
+        return True
     clean = text.replace(" ", "").replace("　", "").replace("\n", "")
     if clean:
         for char in set(clean):
@@ -62,7 +64,6 @@ def _transcribe_with_openai(audio_file: str) -> str:
             model="whisper-1",
             file=f,
             language="zh",
-            prompt=INITIAL_PROMPT,
         )
     return result.text.strip()
 
