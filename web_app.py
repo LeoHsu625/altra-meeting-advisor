@@ -118,9 +118,11 @@ async def index() -> FileResponse:
 async def ws_endpoint(websocket: WebSocket) -> None:
     await websocket.accept()
     _websockets.append(websocket)
+    _t = _store.get_full_transcript()
+    print(f"[WS init] transcript length={len(_t)}, segments={not _store.is_empty()}")
     await websocket.send_json({
         "type": "init",
-        "transcript": _store.get_full_transcript(),
+        "transcript": _t,
         "history_loaded": bool(_history),
         "voice_enabled": _voice_enabled,
     })
