@@ -18,6 +18,7 @@ def _is_silent(audio_file: str) -> bool:
             frames = wf.readframes(wf.getnframes())
         samples = struct.unpack(f"<{len(frames) // 2}h", frames)
         rms = math.sqrt(sum(s * s for s in samples) / len(samples))
+        print(f"[RMS] {rms:.1f} (threshold={SILENCE_THRESHOLD})")
         return rms < SILENCE_THRESHOLD
     except Exception:
         return False
