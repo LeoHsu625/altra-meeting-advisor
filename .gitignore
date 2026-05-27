@@ -1,0 +1,22 @@
+# 環境設定（含 API Key，不推上 GitHub）
+.env
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# 會議輸出（本機資料，各電腦獨立保留）
+output/
+meeting_history/
+
+# 暫存音訊檔
+*.wav
+*.mp3
+
+# macOS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
