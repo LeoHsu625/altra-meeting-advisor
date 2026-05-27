@@ -7,7 +7,7 @@ ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
 OPENAI_API_KEY    = os.getenv("OPENAI_API_KEY")
 # "mlx"    → 本機 Apple Silicon（Leo 的 Mac，預設）
 # "openai" → OpenAI Whisper API（Windows 或無 M 晶片的機器）
-WHISPER_BACKEND   = os.getenv("WHISPER_BACKEND", "mlx")
+WHISPER_BACKEND   = os.getenv("WHISPER_BACKEND", "mlx").strip()
 
 AUDIO_CHUNK = 1024
 AUDIO_CHANNELS = 1
