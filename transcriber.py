@@ -70,12 +70,15 @@ def _transcribe_with_openai(audio_file: str) -> str:
 def transcribe(audio_file: str) -> str:
     try:
         if _is_silent(audio_file):
+            print("[transcribe] 靜音，略過")
             return ""
         if WHISPER_BACKEND == "openai":
             text = _transcribe_with_openai(audio_file)
         else:
             text = _transcribe_with_mlx(audio_file)
+        print(f"[transcribe] Whisper 回傳: {repr(text)}")
         if _is_hallucination(text):
+            print("[transcribe] 判定為幻覺，略過")
             return ""
         return _apply_corrections(text)
     except Exception as e:
