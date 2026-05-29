@@ -1,6 +1,7 @@
 import asyncio
 import tempfile
 import subprocess
+import sys
 import os
 import edge_tts
 
@@ -13,7 +14,11 @@ async def _speak_async(text: str) -> None:
     try:
         communicate = edge_tts.Communicate(text, voice=VOICE)
         await communicate.save(tmp_path)
-        subprocess.run(["afplay", tmp_path], check=True)
+        if sys.platform == "darwin":
+            subprocess.run(["afplay", tmp_path], check=True)
+        else:
+            from playsound import playsound
+            playsound(tmp_path)
     finally:
         if os.path.exists(tmp_path):
             os.remove(tmp_path)
