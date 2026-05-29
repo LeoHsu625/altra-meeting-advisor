@@ -164,7 +164,10 @@
   .advice-empty .hint { font-size: 13px; color: #444; text-align: center; line-height: 1.6; }
 
   #advice-content { display: none; }
-  #advice { font-size: 14px; line-height: 1.85; color: #c5cae9; white-space: pre-wrap; }
+  .advice-entry { margin-bottom: 18px; padding-bottom: 18px; border-bottom: 1px solid #1e2130; }
+  .advice-entry:last-child { border-bottom: none; margin-bottom: 0; }
+  .advice-time { font-size: 11px; color: #555; margin-bottom: 6px; }
+  .advice-text { font-size: 14px; line-height: 1.85; color: #c5cae9; white-space: pre-wrap; }
 
   .divider { border: none; border-top: 1px solid #1e2130; margin: 20px 0; }
 
@@ -244,7 +247,7 @@
         <div class="hint">按下「呼叫 AI 建議」或 F9<br>AI 將根據當前逐字稿給出策略建議</div>
       </div>
       <div id="advice-content">
-        <div id="advice"></div>
+        <div id="advice-list"></div>
         <hr class="divider" id="summary-divider" style="display:none">
         <div id="summary-section">
           <div class="summary-label">會議摘要</div>
@@ -272,7 +275,7 @@
   const connDot   = document.getElementById('conn-dot');
   const connLabel = document.getElementById('conn-label');
   const segList   = document.getElementById('seg-list');
-  const adviceEl  = document.getElementById('advice');
+  const adviceList = document.getElementById('advice-list');
   const summaryEl = document.getElementById('summary');
   const btnCue    = document.getElementById('btn-cue');
   const btnPause  = document.getElementById('btn-pause');
@@ -480,7 +483,18 @@
     if (msg.type === 'advice') {
       document.getElementById('advice-empty').style.display = 'none';
       document.getElementById('advice-content').style.display = 'block';
-      adviceEl.textContent = msg.text;
+      const entry = document.createElement('div');
+      entry.className = 'advice-entry';
+      const now = new Date().toLocaleTimeString('zh-TW', {hour:'2-digit', minute:'2-digit'});
+      const timeEl = document.createElement('div');
+      timeEl.className = 'advice-time';
+      timeEl.textContent = now;
+      const textEl = document.createElement('div');
+      textEl.className = 'advice-text';
+      textEl.textContent = msg.text;
+      entry.appendChild(timeEl);
+      entry.appendChild(textEl);
+      document.getElementById('advice-list').prepend(entry);
       document.getElementById('right-body').scrollTop = 0;
       btnCue.disabled = false;
       setConn('AI 建議已產出', 'connected');
