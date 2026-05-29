@@ -25,4 +25,7 @@ async def _speak_async(text: str) -> None:
 
 
 def speak(text: str) -> None:
-    asyncio.run(_speak_async(text))
+    try:
+        asyncio.run(_speak_async(text))
+    except Exception as e:
+        print(f"[語音錯誤] {e}")
