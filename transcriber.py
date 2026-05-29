@@ -24,6 +24,19 @@ def _is_silent(audio_file: str) -> bool:
         return False
 
 
+_HALLUCINATION_PHRASES = [
+    "以上言論不代表本台立場",
+    "字幕由愛奇藝提供",
+    "請訂閱我的頻道",
+    "謝謝收看",
+    "謝謝觀看",
+    "版權所有",
+    "敬請期待",
+    "本影片由",
+    "MBC 뉴스",
+]
+
+
 def _is_hallucination(text: str) -> bool:
     if not text or len(text.strip()) < 4:
         return True
@@ -31,6 +44,9 @@ def _is_hallucination(text: str) -> bool:
         return True
     if INITIAL_PROMPT.replace("，", "").replace("、", "") in text.replace("，", "").replace("、", ""):
         return True
+    for phrase in _HALLUCINATION_PHRASES:
+        if phrase in text:
+            return True
     clean = text.replace(" ", "").replace("　", "").replace("\n", "")
     if clean:
         for char in set(clean):
@@ -64,6 +80,7 @@ def _transcribe_with_openai(audio_file: str) -> str:
             model="whisper-1",
             file=f,
             language="zh",
+            prompt="繁體中文會議記錄",
         )
     return result.text.strip()
 
