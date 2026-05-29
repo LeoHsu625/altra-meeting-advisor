@@ -9,7 +9,7 @@ INITIAL_PROMPT = (
     "以下是益瑞電子的業務會議，"
     "可能涉及 PCB、HDI、AVL 認證、G3、低介電 PI 材料等專業術語。"
 )
-SILENCE_THRESHOLD = 80  # RMS 低於此值視為靜音，不送 Whisper
+SILENCE_THRESHOLD = 150  # RMS 低於此值視為靜音，不送 Whisper
 
 
 def _is_silent(audio_file: str) -> bool:
