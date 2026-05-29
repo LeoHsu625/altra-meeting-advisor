@@ -88,13 +88,14 @@ def _transcribe_chunk(audio_file: str, seq: int) -> None:
             with _chunk_count_lock:
                 _chunk_count += 1
                 count = _chunk_count
-            _store.append(text)
+            store_index = _store.append(text)
             _sync_broadcast({
                 "type": "transcript",
                 "seq": seq,
                 "text": text,
                 "full": _store.get_full_transcript(),
                 "count": count,
+                "store_index": store_index,
             })
         else:
             _sync_broadcast({"type": "silent", "seq": seq})
@@ -189,6 +190,16 @@ async def stop_meeting() -> dict:
     speak("會議摘要已產出，請查看螢幕。")
     _sync_broadcast({"type": "summary", "text": summary, "file": str(out_file)})
     return {"status": "done", "summary": summary, "file": str(out_file)}
+
+
+@app.post("/transcript/edit")
+async def edit_transcript(payload: dict) -> dict:
+    index = payload.get("store_index")
+    text = payload.get("text", "").strip()
+    if index is None or not text:
+        return {"status": "invalid"}
+    ok = _store.update_segment(index, text)
+    return {"status": "ok" if ok else "not_found"}
 
 
 @app.get("/history")

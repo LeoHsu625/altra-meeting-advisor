@@ -8,14 +8,22 @@ class TranscriptStore:
         self._lock = threading.Lock()
         self._segments: List[Dict] = []
 
-    def append(self, text: str) -> None:
+    def append(self, text: str) -> int | None:
         if not text or not text.strip():
-            return
+            return None
         with self._lock:
             self._segments.append({
                 "timestamp": datetime.now().strftime("%H:%M:%S"),
                 "text": text.strip(),
             })
+            return len(self._segments) - 1
+
+    def update_segment(self, index: int, text: str) -> bool:
+        with self._lock:
+            if 0 <= index < len(self._segments):
+                self._segments[index]["text"] = text.strip()
+                return True
+            return False
 
     def get_full_transcript(self) -> str:
         with self._lock:

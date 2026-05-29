@@ -330,9 +330,11 @@
       el.innerHTML = `
         <span class="seg-time">[${s.time}]</span>
         <div class="seg-body">
-          <div class="seg-text">${s.text}</div>
+          <div class="seg-text" title="雙擊可編輯" style="cursor:text">${s.text}</div>
         </div>
         <span class="seg-badge done">✅ 完成</span>`;
+      const textDiv = el.querySelector('.seg-text');
+      textDiv.addEventListener('dblclick', () => editSegment(seq, textDiv, s));
     } else if (s.state === 'transcribing') {
       el.innerHTML = `
         <span class="seg-time">[${s.time}]</span>
@@ -352,6 +354,37 @@
           <span class="seg-badge silent">（靜音，略過）</span>
         </div>`;
     }
+  }
+
+  function editSegment(seq, textDiv, s) {
+    if (textDiv.querySelector('textarea')) return;
+    const original = s.text;
+    const ta = document.createElement('textarea');
+    ta.value = original;
+    ta.style.cssText = 'width:100%;min-height:60px;background:#1e2030;color:#cdd6f4;border:1px solid #7c83ff;border-radius:6px;padding:6px;font-size:13px;resize:vertical;font-family:inherit;box-sizing:border-box;';
+    textDiv.innerHTML = '';
+    textDiv.appendChild(ta);
+    ta.focus();
+    ta.select();
+
+    async function saveEdit() {
+      const newText = ta.value.trim();
+      if (newText && newText !== original && s.store_index !== undefined) {
+        await fetch('/transcript/edit', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({store_index: s.store_index, text: newText}),
+        });
+        s.text = newText;
+      }
+      renderSeg(seq);
+    }
+
+    ta.addEventListener('blur', saveEdit);
+    ta.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); ta.blur(); }
+      if (e.key === 'Escape') { ta.value = original; ta.blur(); }
+    });
   }
 
   function setConn(label, type) {
@@ -405,10 +438,11 @@
     }
 
     if (msg.type === 'transcript') {
-      const { seq, text, count } = msg;
+      const { seq, text, count, store_index } = msg;
       if (segs[seq]) {
         segs[seq].state = 'done';
         segs[seq].text = text;
+        segs[seq].store_index = store_index;
         renderSeg(seq);
       }
       doneCount = count;
