@@ -27,6 +27,8 @@ def _is_silent(audio_file: str) -> bool:
 _HALLUCINATION_PHRASES = [
     "以上言論不代表本台立場",
     "字幕由愛奇藝提供",
+    "由 Amara.org 社群提供的字幕",
+    "Amara.org",
     "請訂閱我的頻道",
     "謝謝收看",
     "謝謝觀看",
@@ -47,6 +49,10 @@ def _is_hallucination(text: str) -> bool:
     for phrase in _HALLUCINATION_PHRASES:
         if phrase in text:
             return True
+    # 重複句子偵測：同一段文字出現超過 2 次視為幻覺
+    sentences = [s.strip() for s in re.split(r'[。！？\n]', text) if len(s.strip()) > 4]
+    if sentences and max(sentences.count(s) for s in set(sentences)) > 2:
+        return True
     clean = text.replace(" ", "").replace("　", "").replace("\n", "")
     if clean:
         for char in set(clean):
