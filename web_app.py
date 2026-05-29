@@ -145,11 +145,11 @@ async def cue() -> dict:
         try:
             transcript = _store.get_full_transcript()
             advice = _ai.get_advice(transcript, history=_history)
-            if _voice_enabled:
-                speak(advice)
             _sync_broadcast({"type": "advice", "text": advice})
         finally:
             _is_processing.release()
+        if _voice_enabled:
+            threading.Thread(target=speak, args=(advice,), daemon=True).start()
 
     threading.Thread(target=_run, daemon=True).start()
     return {"status": "processing"}
