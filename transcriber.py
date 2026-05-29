@@ -87,6 +87,7 @@ def _transcribe_with_openai(audio_file: str) -> str:
             file=f,
             language="zh",
             prompt="繁體中文會議記錄",
+            temperature=0.0,
         )
     return result.text.strip()
 
