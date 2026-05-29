@@ -330,10 +330,11 @@
       el.innerHTML = `
         <span class="seg-time">[${s.time}]</span>
         <div class="seg-body">
-          <div class="seg-text" title="雙擊可編輯" style="cursor:text">${s.text}</div>
+          <div class="seg-text" title="雙擊可編輯" style="cursor:text"></div>
         </div>
         <span class="seg-badge done">✅ 完成</span>`;
       const textDiv = el.querySelector('.seg-text');
+      textDiv.textContent = s.text;
       textDiv.addEventListener('dblclick', () => editSegment(seq, textDiv, s));
     } else if (s.state === 'transcribing') {
       el.innerHTML = `

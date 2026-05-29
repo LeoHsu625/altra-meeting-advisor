@@ -1,6 +1,5 @@
 import asyncio
 import tempfile
-import subprocess
 import sys
 import os
 import edge_tts
@@ -15,10 +14,16 @@ async def _speak_async(text: str) -> None:
         communicate = edge_tts.Communicate(text, voice=VOICE)
         await communicate.save(tmp_path)
         if sys.platform == "darwin":
+            import subprocess
             subprocess.run(["afplay", tmp_path], check=True)
         else:
-            from playsound import playsound
-            playsound(tmp_path)
+            import pygame
+            pygame.mixer.init()
+            pygame.mixer.music.load(tmp_path)
+            pygame.mixer.music.play()
+            while pygame.mixer.music.get_busy():
+                pygame.time.Clock().tick(10)
+            pygame.mixer.quit()
     finally:
         if os.path.exists(tmp_path):
             os.remove(tmp_path)

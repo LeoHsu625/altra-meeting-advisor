@@ -1,7 +1,9 @@
 import os
+from pathlib import Path
 from dotenv import load_dotenv
 
-load_dotenv()
+_BASE_DIR = Path(__file__).parent
+load_dotenv(_BASE_DIR / ".env")
 
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
 OPENAI_API_KEY    = os.getenv("OPENAI_API_KEY")
@@ -17,7 +19,7 @@ WHISPER_MODEL = "mlx-community/whisper-large-v3-turbo"  # mlx 模式專用
 TTS_VOICE = "zh-TW-HsiaoChenNeural"
 HOTKEY_CUE = "<f9>"
 HOTKEY_STOP = "<f10>"
-OUTPUT_DIR = "output"
+OUTPUT_DIR = str(_BASE_DIR / "output")
 
 # 逐字稿自動替換表：Whisper 常見音譯錯誤 → 正確名稱
 # 遇到新的錯誤直接在這裡新增即可
@@ -43,6 +45,6 @@ TRANSCRIPT_CORRECTIONS = {
     "河先生": "何先生", "賀先生": "何先生",
 }
 
-MEMORY_DIR = "meeting_history"
+MEMORY_DIR = str(_BASE_DIR / "meeting_history")
 MAX_HISTORY_COUNT = 5
 WEB_PORT = 8000
